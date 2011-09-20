@@ -25,6 +25,20 @@ function! s:invader()
   hi InvaderBlock ctermfg=darkblue ctermbg=darkblue guifg=darkblue guibg=darkblue
   hi InvaderShip  ctermfg=red ctermbg=NONE guifg=red guibg=NONE
   hi InvaderBeam  ctermfg=green ctermbg=NONE guifg=green guibg=NONE
+
+  let es = [[5, 1], [10, 1]]
+  let [emin, emax] = [&columns, -1]
+  for e in es
+    if e[0] < emin
+      let emin = e[0]
+    endif
+    if e[0] > emax
+      let emax = e[0]
+    endif
+  endfor
+  let edx = -1
+  let est = 10
+
   while 1
     let c = getchar(0)
     if c != 0
@@ -46,6 +60,47 @@ function! s:invader()
     endif
     if x > &columns-1
       let x = &columns-1
+    endif
+    let est -= 1
+    if est == 0
+      let est = 10
+      for e in es
+        let s = getline(e[1])
+        let s = s[:e[0]-1].' '.s[e[0]+1:]
+        call setline(e[1], s)
+      endfor
+      for e in es
+        let e[0] += edx
+        if e[0] < 1
+          let edx = 1
+          for ee in es
+            let ee[1] += 1
+          endfor
+        endif
+        if e[0] > &columns-2
+          let edx = -1
+          for ee in es
+            let ee[1] += 1
+          endfor
+        endif
+      endfor
+      for e in es
+        let s = getline(e[1])
+        let s = s[:e[0]-1].'v'.s[e[0]+1:]
+        call setline(e[1], s)
+      endfor
+    elseif est < 5
+      for e in es
+        let s = getline(e[1])
+        let s = s[:e[0]-1].'v'.s[e[0]+1:]
+        call setline(e[1], s)
+      endfor
+    else
+      for e in es
+        let s = getline(e[1])
+        let s = s[:e[0]-1].'V'.s[e[0]+1:]
+        call setline(e[1], s)
+      endfor
     endif
     if my > 0
       let s = getline(my)
