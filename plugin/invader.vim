@@ -92,6 +92,7 @@ function! s:ship.missile.work() dict
       let s:enemies.e = et
       if len(s:enemies.e) == 0
         let s:loop = 0
+        return
       endif
     elseif b == '#'
       call s:update(self.x-1, self.y, '   ')
@@ -161,6 +162,7 @@ function! s:enemies.missile.work() dict
     let b = s[self.x]
     if b == 'A'
       let s:loop = -2
+      return
     elseif b == '#'
       call s:update(self.x-1, self.y, '   ')
       let self.y = -1
@@ -211,6 +213,13 @@ function! s:invader()
     sleep 50ms
     redraw
   endwhile
+  if s:loop == -1
+    echohl WarningMsg | echomsg "Game Canceled" | echohl NONE
+  elseif s:loop == 0
+    echohl WarningMsg | echomsg "Game Clear" | echohl NONE
+  else
+    echohl WarningMsg | echomsg "Game Over" | echohl NONE
+  endif
   call s:cursor_on(1)
   bdelete
 endfunction
