@@ -61,11 +61,11 @@ function! s:invader()
         else
           let s1 = mx - 1
           let s2 = mx + 1
-          if s1 < 0
-            let s1 = 0
+          if s1 < 1
+            let s1 = 1
           endif
-          if s1 > len(s)-1
-            let s1 = len(s)-1
+          if s1 > len(s)-2
+            let s1 = len(s)-2
           endif
           let s = s[:s1-1].'   '.s[s2+1:]
           call setline(my, s)
