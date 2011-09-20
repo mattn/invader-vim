@@ -5,6 +5,7 @@ function! s:invader()
   setlocal bufhidden=wipe
   setlocal buftype=nofile
   setlocal nonumber
+  setlocal nolist
   setlocal nowrap
   setlocal nocursorline
   setlocal nocursorcolumn
