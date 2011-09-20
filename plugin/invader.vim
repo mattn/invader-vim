@@ -1,5 +1,5 @@
 function! s:invader()
-  edit ==SPACE INVADER==
+  edit `='==SPACE INVADER=='`
   setlocal buftype=nowrite
   setlocal noswapfile
   setlocal bufhidden=wipe
