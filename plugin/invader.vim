@@ -10,9 +10,9 @@ function! s:invader()
   setlocal nocursorline
   setlocal nocursorcolumn
   let lines = repeat([repeat(' ', &columns)], &lines)
-  let lines[16] = repeat(' ', 5).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 5)
-  let lines[17] = repeat(' ', 5).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 5)
-  let lines[18] = repeat(' ', 5).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 5)
+  for l in [16,17,18]
+    let lines[l] = repeat(' ', 5).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 5)
+  endfor
   call setline(1, lines)
   redraw
   let x = 40
