@@ -1,9 +1,19 @@
 let s:loop = 1
-let s:ship = { "x": 40, "dx": -1 }
-let s:missile = { "x": -1, "y": -1 }
-let s:enemies = { "dx": -1, "e":[], "st": 10 }
+let s:ship = { "x": 40, "dx": -1, "missile": { "x": -1, "y": -1 } }
+let s:enemies = { "dx": -1, "e":[], "st": 10, "missile": { "x": -1, "y": -1 } }
 
 let s:cursor = ''
+
+let s:rand_num = 1
+function! s:rand()
+  if has('reltime')
+    let match_end = matchend(reltimestr(reltime()), '\d\+\.') + 1
+    return reltimestr(reltime())[l:match_end : ]
+  else
+    let s:rand_num += 1
+    return s:rand_num
+  endif
+endfunction
 
 function! s:update(x, y, c)
   let s = getline(a:y)
@@ -38,16 +48,17 @@ function! s:ship.work() dict
     let self.dx = -1
   elseif c == 'l'
     let self.dx = 1
-  elseif c == ' ' && s:missile.y <= 0
-    let s:missile.x = self.x + self.dx
-    let s:missile.y = 22
-    if s:missile.x < 0
-      let s:missile.x = 0
+  elseif c == ' ' && self.missile.y <= 0
+    let self.missile.x = self.x + self.dx
+    let self.missile.y = 22
+    if self.missile.x < 0
+      let self.missile.x = 0
     endif
-    if s:missile.x > 80-1
-      let s:missile.x = 80-1
+    if self.missile.x > 80-1
+      let self.missile.x = 80-1
     endif
   endif
+  call self.missile.work()
 
   call s:update(self.x, 22, ' ')
   let self.x = self.x + self.dx
@@ -60,7 +71,7 @@ function! s:ship.work() dict
   call s:update(self.x, 22, 'A')
 endfunction
 
-function! s:missile.work() dict
+function! s:ship.missile.work() dict
   if self.y > 0
     call s:update(self.x, self.y, ' ')
     let self.y -= 1
@@ -84,7 +95,7 @@ function! s:missile.work() dict
       endif
     elseif b == '#'
       call s:update(self.x-1, self.y, '   ')
-      let s:missile.y = -1
+      let self.y = -1
     else
       call s:update(self.x, self.y, '|')
     endif
@@ -92,41 +103,72 @@ function! s:missile.work() dict
 endfunction
 
 function! s:enemies.work() dict
-  let s:enemies.st -= 1
-  if s:enemies.st == 0
-    let s:enemies.st = 10
-    for e in s:enemies.e
+  let self.st -= 1
+  if self.st == 0
+    let self.st = 10
+    for e in self.e
       call s:update(e[0], e[1], '  ')
     endfor
-    let dx = s:enemies.dx
+    let dx = self.dx
     let dxt = dx
-    for e in s:enemies.e
+    for e in self.e
       let e[0] += dx
       if e[0] < 1
         let dxt = 1
-        for ee in s:enemies.e
+        for ee in self.e
           let ee[1] += 1
         endfor
       endif
       if e[0] > s:w-2
         let dxt = -1
-        for ee in s:enemies.e
+        for ee in self.e
           let ee[1] += 1
         endfor
       endif
     endfor
-    let s:enemies.dx = dxt
-    for e in s:enemies.e
+    let self.dx = dxt
+    for e in self.e
       call s:update(e[0], e[1], 'vv')
     endfor
   elseif self.st < 5
-    for e in s:enemies.e
+    for e in self.e
       call s:update(e[0], e[1], 'vv')
     endfor
   else
-    for e in s:enemies.e
+    for e in self.e
       call s:update(e[0], e[1], 'VV')
     endfor
+  endif
+
+  if self.missile.y == -1
+    if s:rand() < 5000
+      let e = self.e[s:rand() % len(self.e)]
+      let self.missile.x = e[0]
+      let self.missile.y = e[1]
+    endif
+  else
+    call self.missile.work()
+  endif
+endfunction
+
+function! s:enemies.missile.work() dict
+  if self.y > 0
+    call s:update(self.x, self.y, ' ')
+    let self.y += 1
+    if self.y > s:h
+      let self.y = -1
+      return
+    endif
+    let s = getline(self.y)
+    let b = s[self.x]
+    if b == 'A'
+      let s:loop = -2
+    elseif b == '#'
+      call s:update(self.x-1, self.y, '   ')
+      let self.y = -1
+    else
+      call s:update(self.x, self.y, '$')
+    endif
   endif
 endfunction
 
@@ -165,7 +207,6 @@ function! s:invader()
   call s:cursor_on(0)
   while s:loop == 1
     call s:enemies.work()
-    call s:missile.work()
     call s:ship.work()
     sleep 30ms
     redraw
