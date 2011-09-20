@@ -217,5 +217,5 @@ function! s:invader()
   bdelete
 endfunction
 
-command! -nargs=* Invader :call s:invader(<f-args>)
+command! Invader :call s:invader()
 
