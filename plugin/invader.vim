@@ -5,12 +5,23 @@ let s:enemies = { "dx": -1, "e":[], "st": 10 }
 
 let s:cursor = ''
 
+function! s:update(x, y, c)
+  let s = getline(a:y)
+  let o = ''
+  if a:x > 0
+    let o .= s[:a:x-1]
+  endif
+  let o .= a:c
+  let o .= s[a:x+(len(a:c)+1)-1:]
+  call setline(a:y, o)
+endfunction
+
 function! s:cursor_on(f)
   if s:cursor == ''
     redir => s:cursor
     silent! hi Cursor
     redir END
-    let s:cursor = matchstr(s:cursor, 'xxx\zs.*')
+    let s:cursor = substitute(matchstr(s:cursor, 'xxx\zs.*'), "\n", ' ', 'g')
   endif
   if a:f
     exe "hi Cursor ".s:cursor
@@ -30,6 +41,12 @@ function! s:ship.work() dict
   elseif c == ' ' && s:missile.y <= 0
     let s:missile.x = self.x + self.dx
     let s:missile.y = 22
+    if s:missile.x < 0
+      let s:missile.x = 0
+    endif
+    if s:missile.x > 80-1
+      let s:missile.x = 80-1
+    endif
   endif
 
   call s:update(self.x, 22, ' ')
@@ -49,10 +66,7 @@ function! s:missile.work() dict
     let self.y -= 1
     let s = getline(self.y)
     let b = s[self.x]
-    if b == ' '
-      let s = s[:self.x-1].'|'.s[self.x+1:]
-      call setline(self.y, s)
-    elseif b =~ '[vV]'
+    if b =~ '[vV]'
       let et = []
       for e in s:enemies.e
         if (e[0] == self.x || e[0]+1 == self.x) && e[1] == self.y
@@ -116,18 +130,6 @@ function! s:enemies.work() dict
   endif
 endfunction
 
-function! s:update(x, y, c)
-  let [s, o] = [getline(a:y), '']
-  if a:x > 0
-    let o .= s[:a:x-1]
-  endif
-  let o .= a:c
-  if a:x < 80-len(a:c)
-    let o .= s[a:x+len(a:c):80]
-  endif
-  call setline(a:y, o)
-endfunction
-
 function! s:invader()
   edit `='==SPACE INVADER=='`
   setlocal buftype=nowrite
@@ -155,9 +157,11 @@ function! s:invader()
   hi InvaderBeam  ctermfg=green ctermbg=NONE guifg=green guibg=NONE
 
   let s:enemies.e = [
-  \ [5, 1], [8, 1], [11, 1]
+  \ [5, 1], [8, 1], [11, 1], [14, 1],
+  \ [5, 3], [8, 3], [11, 3], [14, 3]
   \]
 
+  let s:loop = 1
   call s:cursor_on(0)
   while s:loop == 1
     call s:enemies.work()
@@ -171,3 +175,4 @@ function! s:invader()
 endfunction
 
 command! -nargs=* Invader :call s:invader(<f-args>)
+
