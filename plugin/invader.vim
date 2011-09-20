@@ -84,9 +84,7 @@ function! s:ship.missile.work() dict
       for e in s:enemies.e
         if (e[0] == self.x || e[0]+1 == self.x) && e[1] == self.y
           let self.y = -1
-          let s = getline(e[1])
-          let s = s[:e[0]-1].'  '.s[e[0]+2:]
-          call setline(e[1], s)
+          call s:update(e[0], e[1], '  ')
         else
           call add(et, e)
         endif
@@ -143,7 +141,7 @@ function! s:enemies.work() dict
   endif
 
   if self.missile.y == -1
-    if s:rand() < 1000
+    if s:rand() < 5000
       let e = self.e[s:rand() % len(self.e)]
       let self.missile.x = e[0]
       let self.missile.y = e[1]
