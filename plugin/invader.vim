@@ -3,6 +3,22 @@ let s:ship = { "x": 40, "dx": -1 }
 let s:missile = { "x": -1, "y": -1 }
 let s:enemies = { "dx": -1, "e":[], "st": 10 }
 
+let s:cursor = ''
+
+function! s:cursor_on(f)
+  if s:cursor == ''
+    redir => s:cursor
+    silent! hi Cursor
+    redir END
+    let s:cursor = matchstr(s:cursor, 'xxx\zs.*')
+  endif
+  if a:f
+    exe "hi Cursor ".s:cursor
+  else
+    hi Cursor ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE
+  endif
+endfunction
+
 function! s:ship.work() dict
   let c = nr2char(getchar(0))
   if c == 'q'
@@ -142,6 +158,7 @@ function! s:invader()
   \ [5, 1], [8, 1], [11, 1]
   \]
 
+  call s:cursor_on(0)
   while s:loop == 1
     call s:enemies.work()
     call s:missile.work()
@@ -149,6 +166,7 @@ function! s:invader()
     sleep 30ms
     redraw
   endwhile
+  call s:cursor_on(1)
   bdelete
 endfunction
 
