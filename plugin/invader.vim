@@ -20,6 +20,8 @@ function! s:update(x, y, c)
   let o = ''
   if a:x > 0
     let o .= s[:a:x-1]
+  elseif a:x < 0
+    let o .= a:c[-a:x :]
   endif
   let o .= a:c
   let o .= s[a:x+(len(a:c)+1)-1:]
@@ -141,7 +143,7 @@ function! s:enemies.work() dict
   endif
 
   if self.missile.y == -1
-    if s:rand() < 5000
+    if s:rand() < 1000
       let e = self.e[s:rand() % len(self.e)]
       let self.missile.x = e[0]
       let self.missile.y = e[1]
@@ -208,7 +210,7 @@ function! s:invader()
   while s:loop == 1
     call s:enemies.work()
     call s:ship.work()
-    sleep 30ms
+    sleep 50ms
     redraw
   endwhile
   call s:cursor_on(1)
