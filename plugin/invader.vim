@@ -113,7 +113,23 @@ function! s:invader()
         if b == ' '
           let s = s[:mx-1].'|'.s[mx+1:]
           call setline(my, s)
-        else
+	    elseif b =~ '[vV]'
+          let en = 0
+          let el = len(es)-1
+          let et = []
+          while en < el
+            if es[en][0] == mx && es[en][1] == my
+              let my = -1
+            else
+              call add(et, es[en])
+            endif
+            let en += 1
+          endwhile
+          let es = et
+		  if len(es) == 0
+            break
+          endif
+	    elseif b == '#'
           let s1 = mx - 1
           let s2 = mx + 1
           if s1 < 1
