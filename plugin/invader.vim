@@ -195,10 +195,12 @@ function! s:invader()
   redraw
   syn match InvaderBlock  '#'
   syn match InvaderShip   'A'
-  syn match InvaderBeam   '|'
+  syn match InvaderBeam   /[|\$]/
+  syn match InvaderEnemy  /[vV]/
   hi InvaderBlock ctermfg=darkblue ctermbg=darkblue guifg=darkblue guibg=darkblue
   hi InvaderShip  ctermfg=red ctermbg=NONE guifg=red guibg=NONE
   hi InvaderBeam  ctermfg=green ctermbg=NONE guifg=green guibg=NONE
+  hi InvaderEnemy ctermfg=yellow ctermbg=NONE guifg=yellow guibg=NONE
 
   let s:enemies.e = [
   \ [5, 1], [8, 1], [11, 1], [14, 1],
