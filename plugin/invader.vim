@@ -113,24 +113,22 @@ function! s:enemies.work() dict
     let dxt = dx
     for e in self.e
       let e[0] += dx
-      if e[0] < 1
-        let dxt = 1
-        for ee in self.e
-          let ee[1] += 1
-        endfor
-      endif
-      if e[0] > s:w-2
-        let dxt = -1
-        for ee in self.e
-          let ee[1] += 1
-        endfor
+      if e[0] < 1 || e[0] > s:w-2
+        let dxt = -dx
       endif
     endfor
+    if dx != dxt
+      for e in self.e
+        let e[1] += 1
+        if e[1] > 16
+          let s:loop = -3
+          return
+        endif
+      endfor
+    endif
     let self.dx = dxt
-    for e in self.e
-      call s:update(e[0], e[1], 'vv')
-    endfor
-  elseif self.st < 5
+  endif
+  if self.st < 5
     for e in self.e
       call s:update(e[0], e[1], 'vv')
     endfor
