@@ -1,18 +1,16 @@
 let s:loop = 1
 let s:ship = { "x": 40, "dx": -1, "missile": { "x": -1, "y": -1 } }
 let s:enemies = { "dx": -1, "e":[], "st": 10, "missile": { "x": -1, "y": -1 } }
-
 let s:cursor = ''
 
-let s:rand_num = 1
+let s:seed = 0
+function! s:srand(seed)
+  let s:seed = a:seed
+endfunction
+
 function! s:rand()
-  if has('reltime')
-    let match_end = matchend(reltimestr(reltime()), '\d\+\.') + 1
-    return reltimestr(reltime())[l:match_end : ]
-  else
-    let s:rand_num += 1
-    return s:rand_num
-  endif
+  let s:seed = s:seed * 214013 + 2531011
+  return (s:seed < 0 ? s:seed - 0x80000000 : s:seed) / 0x10000 % 0x8000
 endfunction
 
 function! s:update(x, y, c)
@@ -38,7 +36,7 @@ function! s:cursor_on(f)
   if a:f
     exe "hi Cursor ".s:cursor
   else
-    hi Cursor ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE
+    hi Cursor term=NONE ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE
   endif
 endfunction
 
@@ -206,12 +204,22 @@ function! s:invader()
   hi InvaderBeam  ctermfg=green ctermbg=NONE guifg=green guibg=NONE
   hi InvaderEnemy ctermfg=yellow ctermbg=NONE guifg=yellow guibg=NONE
 
+  call s:srand(localtime())
+
+  let s:loop = 1
+  let s:ship.x = 40
+  let s:ship.dx = -1
+  let s:ship.missile.x = -1
+  let s:ship.missile.y = -1
+  let s:enemies.dx = -1
   let s:enemies.e = [
   \ [5, 1], [8, 1], [11, 1], [14, 1],
   \ [5, 3], [8, 3], [11, 3], [14, 3]
   \]
+  let s:enemies.missile.x = -1
+  let s:enemies.missile.y = -1
+  let s:cursor = ''
 
-  let s:loop = 1
   call s:cursor_on(0)
   while s:loop == 1
     call s:enemies.work()
