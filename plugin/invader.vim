@@ -165,7 +165,7 @@ function! s:enemies.missile.work() dict
       let self.y = -1
       return
     endif
-    if self.x > 0
+    if self.x < 1
       let b = s[:1]
     else
       let b = s[self.x-1 : self.x + 1]
