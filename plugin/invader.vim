@@ -50,7 +50,7 @@ function! s:ship.work() dict
     let self.dx = 1
   elseif c == ' ' && self.missile.y <= 0
     let self.missile.x = self.x + self.dx
-    let self.missile.y = 22
+    let self.missile.y = 21
     if self.missile.x < 0
       let self.missile.x = 0
     endif
@@ -60,7 +60,7 @@ function! s:ship.work() dict
   endif
   call self.missile.work()
 
-  call s:update(self.x, 22, ' ')
+  call s:update(self.x, 21, ' ')
   let self.x = self.x + self.dx
   if self.x < 0
     let self.x = 0
@@ -68,7 +68,7 @@ function! s:ship.work() dict
   if self.x > 80-1
     let self.x = 80-1
   endif
-  call s:update(self.x, 22, 'A')
+  call s:update(self.x, 21, 'A')
 endfunction
 
 function! s:ship.missile.work() dict
@@ -190,7 +190,7 @@ function! s:invader()
   let s:w = 80
   let s:h = 25
   let lines = repeat([repeat(' ', s:w)], s:h)
-  for l in [16,17,18]
+  for l in [15,16,17]
     let lines[l] = repeat(' ', 5).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 10).repeat('#', 10).repeat(' ', 5)
   endfor
   call setline(1, lines)
