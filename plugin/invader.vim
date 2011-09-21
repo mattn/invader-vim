@@ -160,15 +160,21 @@ function! s:enemies.missile.work() dict
     endif
     let s = getline(self.y)
     let b = s[self.x]
-    if b == 'A'
-      let s:loop = -2
-      return
-    elseif b == '#'
+    if b == '#'
       call s:update(self.x-1, self.y, '   ')
       let self.y = -1
-    else
-      call s:update(self.x, self.y, '$')
+      return
     endif
+    if self.x > 0
+      let b = s[:1]
+    else
+      let b = s[self.x-1 : self.x + 1]
+    endif
+    if b =~ 'A'
+      let s:loop = -2
+      return
+    endif
+    call s:update(self.x, self.y, '$')
   endif
 endfunction
 
