@@ -177,7 +177,7 @@ function! s:enemies.missile.work() dict
 endfunction
 
 function! s:invader()
-  edit `='==SPACE INVADER=='`
+  silent edit `='==SPACE INVADER=='`
   setlocal buftype=nowrite
   setlocal noswapfile
   setlocal bufhidden=wipe
